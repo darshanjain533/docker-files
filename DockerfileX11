@@ -1,0 +1,14 @@
+FROM ubuntu:14.04
+
+RUN apt-get update
+RUN apt-get install -y firefox
+RUN groupadd -g 1000 user
+RUN useradd -d /home/user -s /bin/bash -m user -u 1000 -g 1000
+USER user
+ENV HOME /home/user
+CMD /usr/bin/firefox
+
+#docker build -t gui -f DockerfileX11 .
+#docker run -it --env="DISPLAY=host.docker.internal:0" -v /tmp/.X11-unix:/tmp/.X11-unix:rw gui
+
+

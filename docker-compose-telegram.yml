@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  telegram-bot-api:
+    platform: linux/x86_64
+    image: aiogram/telegram-bot-api:latest
+    environment:
+      TELEGRAM_API_ID: 12665842
+      TELEGRAM_API_HASH: 48fe3b875bbe4770c52056b95ed19f87
+      TELEGRAM_STAT: 1
+    volumes:
+      - telegram-bot-api-data:/var/lib/telegram-bot-api
+    ports:
+      - 50600:50600
+
+volumes:
+  telegram-bot-api-data:
+  
+  
+  
+#Before start, you will need to obtain api-id and api-hash as described in https://core.telegram.org/api/obtaining_api_id and specify them using the TELEGRAM_API_ID and TELEGRAM_API_HASH environment variables.

@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  firefox:
+    image: X11-firefox:1.0
+    build:
+      context: .
+      dockerfile: DockerfileFirefox
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /home/root/.Xauthority:/root/.Xauthority
+    network_mode: host

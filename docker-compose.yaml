@@ -1,0 +1,80 @@
+---
+version: "3.9"
+services:
+  app:
+    container_name: sentrycapp
+    image: sentryc-app:latest-1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 9292:9292
+    depends_on:
+      - psql-db
+      - redis
+      - zipkin
+    environment:
+      - DATABASE_URL=jdbc:postgresql://psql-db:5432/sentrycdb
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=password
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_PASSWORD=password
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+    volumes:
+      - sentrycvol:/var/lib/sentryc/vol
+  psql-db:
+    container_name: psql-db
+    image: postgres:12
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sentrycdb
+    volumes:
+      - sentrycvol:/var/lib/sentryc/vol
+  mysql-db:
+    container_name: mysql-db
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - sentrycvol:/var/lib/sentryc/vol
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - 9411:9411
+    volumes:
+      - sentrycvol:/var/lib/sentryc/vol
+  redis:
+    image: bitnami/redis:latest
+    build:
+      context: .
+      dockerfile: DockerfileRedis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - 6379:6379
+    volumes:
+      - sentrycvol:/var/lib/sentryc/vol
+  rabbit-mq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - sentrycvol:/var/lib/sentryc/vol
+volumes:
+  sentrycvol: {}
